@@ -8,14 +8,12 @@ import java.util.TimerTask;
 public class ChuangTimer extends JFrame{
 	private JButton reset;
 	private JButton start;
-	private Timer timer;
 	private DigitTimer dt;
 
 	public ChuangTimer(){
 		
 		dt=new DigitTimer();
         int screenWidth=((int)java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);   
-		timer=new Timer();
 		
 		this.setLayout(null);
 		reset=new JButton("R");
@@ -79,19 +77,42 @@ public class ChuangTimer extends JFrame{
 	}
 
 	class OneSecondTask extends TimerTask{
-		private ChuangTimer ct;
+		private ChuangTimer ct=null;
 		
 		public OneSecondTask(ChuangTimer ct){
 			this.ct=ct;
 		}
+		
+		public OneSecondTask(){
+		
+		}
 		public void run(){
 			dt.oneSecond();
-			ct.repaint();
-			System.out.println("Point1");
-			System.out.print
+			System.out.println(dt.rest+":"+dt.miniutes);
+
 		}
 	}
 	
+	class ThreadOfStartTiming implements Runnable{
+		Thread thread=null;
+		
+		public void setThread(Thread thread){
+			this.thread=thread;
+		}
+		
+		public void run(){
+
+			while(dt.running){
+				Timer timer=new Timer();
+				timer.schedule(new OneSecondTask() , 1000);
+			
+			repaint();
+			
+			}
+		}
+		
+		
+	}
 	
 	class StartTiming implements ActionListener{
 		ChuangTimer ct;
@@ -101,17 +122,28 @@ public class ChuangTimer extends JFrame{
 			this.ct=ct;
 		}
 		
+
+		
 		public void actionPerformed(ActionEvent e){
-			System.out.println("Point1");
-			dt.running=true;
-			while(dt.running){
-				timer.schedule(new OneSecondTask(ct), 1000);
+
+			if(!dt.running){
+				Thread start=new Thread(new ThreadOfStartTiming());
+				System.out.println("Thread");
+				dt.running=true;
+				start.start();
+					
+					
+					
+				}
+
+
+
 			}
 		}
 
 		
 	}
-} 
+
 
 	class DigitTimer{
 		int rest=12;
