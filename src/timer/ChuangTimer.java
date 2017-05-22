@@ -9,11 +9,14 @@ public class ChuangTimer extends JFrame{
 	private JButton reset;
 	private JButton start;
 	private DigitTimer dt;
-
+	private JPanel jp12;
+	private JPanel jp60;
+	private int screenWidth;
+	Thread thread;
 	public ChuangTimer(){
 		
 		dt=new DigitTimer();
-        int screenWidth=((int)java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);   
+        screenWidth=((int)java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);   
 		
 		this.setLayout(null);
 		reset=new JButton("R");
@@ -26,18 +29,44 @@ public class ChuangTimer extends JFrame{
 
 		reset.setBounds(50,78,45,20);
 		start.setBounds(105,78, 45,20);
-		JPanel jp12=new JPanel();
-		JPanel jp60=new JPanel();
-		JLabel time12=new JLabel(""+dt.rest+"|");
-		JLabel time60=new JLabel(""+dt.miniutes);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		drawNumber();
+		this.setAlwaysOnTop(true);
+		this.setSize(200, 100);
+		this.setLocation(screenWidth-200, 0);
+		this.setVisible(true);
+
+	}
+	
+	public void drawNumber(){
+		jp12=new JPanel();
+		jp60=new JPanel();
 		jp12.setBounds(10,2,93,74);
+		jp60.setBounds(105,2,93,74);
+		JLabel time12;
+		if(dt.rest<10){
+			time12=new JLabel("0"+dt.rest+"|");
+		}
+		else{
+			time12=new JLabel(""+dt.rest+"|");
+		}
+		JLabel time60;
+		if(dt.miniutes<10){
+				time60=new JLabel("0"+dt.miniutes);
+		}
+		else{
+			time60=new JLabel(""+dt.miniutes);
+		}
+			
+		
+		
 		jp12.add(time12);
 		time12.setFont(new java.awt.Font("Dialog",   1,   60));  
 
 		this.add(jp12);
 		
-		jp60.setBounds(105,2,93,74);
+		
 		jp60.add(time60);
 		time60.setFont(new java.awt.Font("Dialog",   1,   60));  
 		if(dt.color=='b'){
@@ -49,10 +78,7 @@ public class ChuangTimer extends JFrame{
 		}
 		this.add(jp60);
 		
-		
-		this.setSize(200, 100);
-		this.setLocation(screenWidth-200, 0);
-		this.setVisible(true);
+
 		
 	}
 	
@@ -76,42 +102,27 @@ public class ChuangTimer extends JFrame{
 		
 	}
 
-	class OneSecondTask extends TimerTask{
-		private ChuangTimer ct=null;
-		
-		public OneSecondTask(ChuangTimer ct){
-			this.ct=ct;
-		}
-		
-		public OneSecondTask(){
-		
-		}
-		public void run(){
-			dt.oneSecond();
-			System.out.println(dt.rest+":"+dt.miniutes);
 
-		}
-	}
-	
-	class ThreadOfStartTiming implements Runnable{
-		Thread thread=null;
-		
-		public void setThread(Thread thread){
-			this.thread=thread;
-		}
-		
-		public void run(){
 
-			while(dt.running){
-				Timer timer=new Timer();
-				timer.schedule(new OneSecondTask() , 1000);
-			
-			repaint();
+	class OneThread extends Thread{
+		public void run(){
+			try{
+				while(dt.running){
+					this.sleep(1000);
+					dt.oneSecond();
+					System.out.println(dt.rest+":"+dt.miniutes);
+
+					drawNumber();
+					validate();
+					
+				}
+				this.stop();
+			}
+			catch(Exception ex){
+				
+			}
 			
 			}
-		}
-		
-		
 	}
 	
 	class StartTiming implements ActionListener{
@@ -127,10 +138,11 @@ public class ChuangTimer extends JFrame{
 		public void actionPerformed(ActionEvent e){
 
 			if(!dt.running){
-				Thread start=new Thread(new ThreadOfStartTiming());
+			//	Thread start=new Thread(new ThreadOfStartTiming());
+				ct.thread =new OneThread();
 				System.out.println("Thread");
 				dt.running=true;
-				start.start();
+				thread.start();
 					
 					
 					
@@ -146,7 +158,7 @@ public class ChuangTimer extends JFrame{
 
 
 	class DigitTimer{
-		int rest=12;
+		int rest=15;
 		int miniutes=60;
 		boolean running=false;
 		char color='b';
@@ -157,7 +169,7 @@ public class ChuangTimer extends JFrame{
 		
 		public void reset(){
 			this.running=false;
-			this.rest=12;
+			this.rest=15;
 			this.miniutes=60;
 			this.color='b';
 			
@@ -173,8 +185,9 @@ public class ChuangTimer extends JFrame{
 						miniutes--;
 					}
 					else{
-						rest=12;
+						rest=15;
 						miniutes=60;
+						this.color='b';
 					}
 					
 				}
@@ -187,20 +200,3 @@ public class ChuangTimer extends JFrame{
 		}
 		
 	}
-
-
-class Windows{
-	private Point x1,x2,x3,x4; 
-	int number;
-	int color;
-	
-	public Windows(int upperY,int lowwerY,int leftX, int rightX){
-		x1=new Point(leftX,upperY);
-		x2=new Point(rightX,upperY);
-		x3=new Point(leftX,lowwerY);
-		x4=new Point(rightX,lowwerY);
-		
-		
-	}
-	
-}
