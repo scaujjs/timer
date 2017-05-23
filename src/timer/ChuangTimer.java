@@ -1,16 +1,9 @@
 package timer;
 import java.awt.*;
-import java.io.FileNotFoundException;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.sound.sampled.AudioInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import javax.sound.sampled.AudioSystem;
-
 
 public class ChuangTimer extends JFrame{
 	private JButton reset;
@@ -94,18 +87,7 @@ public class ChuangTimer extends JFrame{
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new ChuangTimer();
-		try {
-			InputStream in = new FileInputStream("./yxmt.mp3");// 流文件
-			try {
-				AudioStream as = new AudioStream(in);// 创建AudioStream 对象
-				AudioPlayer.player.start(as);// 开始播放
-				// AudioPlayer.player.stop(as);//停止播放，本例没有设置播放时间，歌曲结束自动停止
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		
 		
 	}
 	
