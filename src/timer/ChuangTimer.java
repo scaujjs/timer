@@ -19,16 +19,17 @@ public class ChuangTimer extends JFrame{
         screenWidth=((int)java.awt.Toolkit.getDefaultToolkit().getScreenSize().width);   
 		
 		this.setLayout(null);
-		reset=new JButton("R");
-		start=new JButton("S");	
+		reset=new JButton("off");
+	
+		start=new JButton("开始");	
 		this.add(reset);
 		this.add(start);
 		
 		reset.addActionListener(new TimeReset());
 		start.addActionListener(new StartTiming(this));
 
-		reset.setBounds(50,78,45,20);
-		start.setBounds(105,78, 45,20);
+		reset.setBounds(10,78,95,20);
+		start.setBounds(105,78, 95,20);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		drawNumber();
@@ -98,7 +99,10 @@ public class ChuangTimer extends JFrame{
 
 		}
 		public void actionPerformed(ActionEvent e){
-			dt.reset();
+			dt.changeWaiting();
+			if(dt.waiting){reset.setText("on");}
+			else{reset.setText("off");}
+//			System.out.println(dt.waiting);
 		}
 		
 	}
@@ -111,7 +115,7 @@ public class ChuangTimer extends JFrame{
 				while(dt.running){
 					this.sleep(1000);
 					dt.oneSecond();
-					System.out.println(dt.rest+":"+dt.miniutes);
+			//		System.out.println(dt.rest+":"+dt.miniutes);
 
 					drawNumber();
 					validate();
@@ -144,23 +148,25 @@ public class ChuangTimer extends JFrame{
 				System.out.println("Thread");
 				dt.running=true;
 				thread.start();
+				start.setText("结束");
 					
 					
 					
 				}
+			else{
+				dt.reset();
+				start.setText("开始");
+			}
 
 
 
 			}
 		}
 
-		
-	}
-
-
 	class DigitTimer{
-		int rest=15;
+		int rest=12;
 		int miniutes=60;
+		boolean waiting=false;
 		boolean running=false;
 		char color='b';
 		
@@ -168,11 +174,18 @@ public class ChuangTimer extends JFrame{
 			
 		}
 		
+		public void changeWaiting(){
+			if(this.waiting)
+				waiting=false;
+			else waiting=true;
+		}
+		
 		public void reset(){
 			this.running=false;
-			this.rest=15;
+			this.rest=12;
 			this.miniutes=60;
 			this.color='b';
+			this.waiting=false;
 			
 		}
 		
@@ -186,9 +199,18 @@ public class ChuangTimer extends JFrame{
 						miniutes--;
 					}
 					else{
-						rest=15;
-						miniutes=60;
-						this.color='b';
+						if(waiting){
+							this.reset();
+							start.setText("开始");
+							reset.setText("off");
+							
+						}
+						else{
+//							System.out.println("error");
+							rest=12;
+							miniutes=60;
+							this.color='b';
+						}
 					}
 					
 				}
@@ -201,3 +223,7 @@ public class ChuangTimer extends JFrame{
 		}
 		
 	}
+	}
+
+
+
